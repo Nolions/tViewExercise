@@ -1,4 +1,4 @@
-package widget
+package exercise
 
 import (
 	"github.com/rivo/tview"

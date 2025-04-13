@@ -1,4 +1,4 @@
-package widget
+package exercise
 
 import (
 	"github.com/gdamore/tcell/v2"

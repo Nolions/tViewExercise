@@ -1,8 +1,7 @@
-package widget
+package exercise
 
 import (
 	"github.com/rivo/tview"
-	"strconv"
 	"tViewExercise/model"
 )
 
@@ -11,7 +10,7 @@ func NewForm(title string, u model.User, border bool) *tview.Form {
 
 	form := tview.NewForm().
 		AddDropDown("Title", t, 1, nil).
-		AddTextView("Id", strconv.Itoa(u.Id), 20, 1, false, false).
+		//AddTextView("Id", strconv.Itoa(u.Id), 20, 1, false, false).
 		AddInputField("name", u.Name, 20, nil, nil).
 		AddInputField("username", u.Username, 20, nil, nil).
 		AddInputField("email", u.Email, 20, nil, nil).

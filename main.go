@@ -3,31 +3,21 @@ package main
 import (
 	"fmt"
 	"github.com/rivo/tview"
-	"tViewExercise/widget"
+	"tViewExercise/model"
+	"tViewExercise/ui"
 )
 
 func main() {
 	app := tview.NewApplication()
-	lLay := widget.NewListView(app, "menu", true, stopApp)
-	//rLay := widget.NewTreeView(".")
-	//form := widget.NewForm("user info", model.NewUser(), true)
-	//grid := widget.NewGrid()
 
-	//flex := tview.NewFlex().
-	//	SetDirection(tview.FlexColumn).
-	//	AddItem(lLay, 30, 20, false).
-	//	//AddItem(form, 40, 20, true).
-	//	//AddItem(rLay, 30, 80, false).
-	//	AddItem(grid, 90, 80, false)
-	//
-	//frame := netFrame("frame Demo", true, flex)
-
-	//pages := newPages(app, []string{"Next", "Quit"}, 3, quickAction, changePageAction)
+	conf := model.NewAWSConfig()
 
 	pages := tview.NewPages()
 
+	credentials := ui.CredentialsLayout(app, pages, "m", stopApp, switchPage, conf)
+
 	m := tview.NewModal().
-		SetText(fmt.Sprintf("demo")).
+		SetText(fmt.Sprintf("exercise")).
 		AddButtons([]string{"Next", "Quit"}).
 		SetDoneFunc(func(i int, v string) {
 			switch i {
@@ -38,31 +28,18 @@ func main() {
 			}
 		})
 
-	pages.AddPage("model", m, false, true).
-		AddPage("listview", lLay, false, false)
+	pages.AddPage("credentials", credentials, true, true).
+		AddPage("m", m, false, false)
 
-	if err := app.SetRoot(pages, false).Run(); err != nil {
+	if err := app.SetRoot(pages, true).Run(); err != nil {
 		panic(err)
 	}
 }
 
-func changePageAction(pages *tview.Pages, page, pageCount int) {
-	nextPage := fmt.Sprintf("page-%d", (page+1)%pageCount)
-	pages.SwitchToPage(nextPage)
-}
-
-func quickAction(app *tview.Application) {
-	app.Stop()
+func switchPage(pages *tview.Pages, pageName string) {
+	pages.SwitchToPage(pageName)
 }
 
 func stopApp(app *tview.Application) {
 	app.Stop()
-}
-
-func newBox(title string, border bool) *tview.Box {
-	v := tview.NewBox().
-		SetBorder(border).
-		SetTitle(title)
-
-	return v
 }
