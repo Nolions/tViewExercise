@@ -1,8 +1,13 @@
-package main
+package widget
 
-import "github.com/rivo/tview"
+import (
+	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
+	"os"
+	"path/filepath"
+)
 
-func newTreeView(path string) *tview.TreeView {
+func NewTreeView(path string) *tview.TreeView {
 	//建立 TreeView 根節點
 	root := tview.NewTreeNode(path).
 		SetColor(tcell.ColorRed)

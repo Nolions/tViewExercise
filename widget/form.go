@@ -1,4 +1,4 @@
-package main
+package widget
 
 import (
 	"github.com/rivo/tview"
@@ -6,7 +6,7 @@ import (
 	"tViewExercise/model"
 )
 
-func newForm(title string, u model.User, border bool) *tview.Form {
+func NewForm(title string, u model.User, border bool) *tview.Form {
 	t := []string{"Mr.", "Ms.", "Mrs.", "Dr.", "Prof."}
 
 	form := tview.NewForm().

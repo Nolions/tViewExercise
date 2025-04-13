@@ -1,11 +1,11 @@
-package main
+package widget
 
 import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
-func netFrame(title string, border bool, content tview.Primitive) *tview.Frame {
+func NewFrame(title string, border bool, content tview.Primitive) *tview.Frame {
 	frame := tview.NewFrame(content).
 		AddText("Header left", true, tview.AlignLeft, tcell.ColorWhite).
 		AddText("Header middle", true, tview.AlignCenter, tcell.ColorWhite).

@@ -1,8 +1,8 @@
-package main
+package widget
 
 import "github.com/rivo/tview"
 
-func newGrid() *tview.Grid {
+func NewGrid() *tview.Grid {
 	newPrimitive := func(text string) tview.Primitive {
 		return tview.NewTextView().
 			SetTextAlign(tview.AlignCenter).
