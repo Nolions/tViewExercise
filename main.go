@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/rivo/tview"
 	"tViewExercise/model"
 	"tViewExercise/ui"
@@ -14,22 +13,13 @@ func main() {
 
 	pages := tview.NewPages()
 
-	credentials := ui.CredentialsLayout(app, pages, "m", stopApp, switchPage, conf)
-
-	m := tview.NewModal().
-		SetText(fmt.Sprintf("exercise")).
-		AddButtons([]string{"Next", "Quit"}).
-		SetDoneFunc(func(i int, v string) {
-			switch i {
-			case 0:
-				pages.SwitchToPage("listview")
-			case 1:
-				app.Stop()
-			}
-		})
+	credentials := ui.CredentialsLayout(app, pages, "manager", stopApp, switchPage, conf)
+	alert := ui.AlertModel("alert", "test/n test", pages, "credentials", switchPage)
+	m := ui.ManagerLayout(app)
 
 	pages.AddPage("credentials", credentials, true, true).
-		AddPage("m", m, false, false)
+		AddPage("alert", alert, false, false).
+		AddPage("manager", m, true, false)
 
 	if err := app.SetRoot(pages, true).Run(); err != nil {
 		panic(err)
