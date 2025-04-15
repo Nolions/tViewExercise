@@ -93,11 +93,11 @@ func ConsoleLayout() *tview.TextView {
 }
 
 func ButtonsLayout(app *tview.Application, pages *tview.Pages) *tview.Flex {
-	inputField := tview.NewInputField().
-		SetLabel("Upload Path: ").
-		SetFieldWidth(55)
-
-	uploadBtn := tview.NewButton("Upload")
+	inputField := tview.NewInputField().SetLabel("Upload Path: ").SetFieldWidth(55)
+	uploadBtn := tview.NewButton("Upload").SetSelectedFunc(func() {
+		pages.ShowPage("filepicker")
+		//app.SetFocus(filePicker) // 可選
+	})
 	downloadBtn := tview.NewButton("Download")
 	deleteBtn := tview.NewButton("Delete")
 	exitBtn := tview.NewButton("Exit").SetSelectedFunc(func() {
