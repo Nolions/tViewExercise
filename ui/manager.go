@@ -6,30 +6,38 @@ import (
 	"github.com/rivo/tview"
 )
 
-func ManagerLayout(
-	app *tview.Application,
-	// pages *tview.Pages,
-	// pageName string,
-	// switchFun func(pages *tview.Pages, pageName string),
-) *tview.Flex {
+func ManagerLayout(app *tview.Application, pages *tview.Pages) *tview.Flex {
 	bucketLayout := BucketNameLayout()
-	btnLayout := ButtonsLayout(app)
+	btnLayout := ButtonsLayout(app, pages)
 	consoleLayout := ConsoleLayout()
-	browserLayout := BrowserLayout(consoleLayout)
+	browserLayout := BrowserLayout(app, consoleLayout)
 
-	// 整體佈局
 	layout := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(bucketLayout, 1, 0, false).
-		AddItem(browserLayout, 0, 5, false).
-		AddItem(btnLayout, 1, 0, true).
+		AddItem(browserLayout, 0, 5, true).
+		AddItem(btnLayout, 3, 0, false).
 		AddItem(consoleLayout, 5, 0, false)
 
 	layout.SetBorder(true)
 
+	// Tab 切換 layout 區塊
+	focusables := []tview.Primitive{browserLayout, btnLayout, consoleLayout}
+	currentFocus := 0
+
+	layout.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyTAB:
+			currentFocus = (currentFocus + 1) % len(focusables)
+			app.SetFocus(focusables[currentFocus])
+			return nil
+		}
+		return event
+	})
+
 	return layout
 }
 
-func BrowserLayout(console *tview.TextView) *tview.Flex {
+func BrowserLayout(app *tview.Application, console *tview.TextView) *tview.Flex {
 	prefixTreeView := PrefixTreeLayout()
 	fileListView := FileListLayout()
 
@@ -49,32 +57,24 @@ func BrowserLayout(console *tview.TextView) *tview.Flex {
 		AddItem(prefixTreeView, 0, 1, true).
 		AddItem(fileListView, 0, 2, false)
 
+	focusables := []tview.Primitive{prefixTreeView, fileListView}
+	currentFocus := 0
+
+	flex.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyLeft:
+			currentFocus = 0
+			app.SetFocus(focusables[currentFocus])
+			return nil
+		case tcell.KeyRight:
+			currentFocus = 1
+			app.SetFocus(focusables[currentFocus])
+			return nil
+		}
+		return event
+	})
+
 	return flex
-}
-
-func PrefixTreeLayout() *tview.TreeView {
-	rootNode := tview.NewTreeNode("Prefixes").SetColor(tcell.ColorGreen)
-	for i := 1; i <= 5; i++ {
-		prefix := fmt.Sprintf("Prefix_%d", i)
-		child := tview.NewTreeNode(prefix).SetReference(prefix)
-		rootNode.AddChild(child)
-	}
-
-	tree := tview.NewTreeView().SetRoot(rootNode).SetCurrentNode(rootNode)
-	tree.SetBorder(true).SetTitle("Prefixes")
-
-	return tree
-}
-
-func FileListLayout() *tview.List {
-	list := tview.NewList().
-		AddItem("File_1", "", 0, nil).
-		AddItem("File_2", "", 0, nil).
-		AddItem("File_3", "", 0, nil)
-
-	list.SetBorder(true).SetTitle("Files")
-
-	return list
 }
 
 func BucketNameLayout() *tview.TextView {
@@ -92,29 +92,77 @@ func ConsoleLayout() *tview.TextView {
 	return console
 }
 
-func ButtonsLayout(app *tview.Application) *tview.Flex {
-	// 下方按鈕區
+func ButtonsLayout(app *tview.Application, pages *tview.Pages) *tview.Flex {
 	inputField := tview.NewInputField().
 		SetLabel("Upload Path: ").
-		SetFieldWidth(40)
+		SetFieldWidth(55)
+
 	uploadBtn := tview.NewButton("Upload")
 	downloadBtn := tview.NewButton("Download")
 	deleteBtn := tview.NewButton("Delete")
 	exitBtn := tview.NewButton("Exit").SetSelectedFunc(func() {
-		app.Stop()
+		pages.SwitchToPage("credentials")
 	})
 
 	layout := tview.NewFlex().SetDirection(tview.FlexColumn).
-		AddItem(tview.NewBox(), 1, 0, false).
-		AddItem(inputField, 55, 0, true).
+		AddItem(tview.NewBox(), 2, 0, false).
+		AddItem(inputField, 70, 0, false).
 		AddItem(tview.NewBox(), 1, 0, false).
 		AddItem(uploadBtn, 10, 0, false).
 		AddItem(tview.NewBox(), 0, 1, false).
-		AddItem(downloadBtn, 10, 0, false).
-		AddItem(tview.NewBox(), 2, 0, false).
+		AddItem(downloadBtn, 12, 0, false).
+		AddItem(tview.NewBox(), 1, 0, false).
 		AddItem(deleteBtn, 10, 0, false).
-		AddItem(tview.NewBox(), 2, 0, false).
-		AddItem(exitBtn, 10, 0, false)
+		AddItem(tview.NewBox(), 1, 0, false).
+		AddItem(exitBtn, 10, 0, false).
+		AddItem(tview.NewBox(), 2, 0, false)
+
+	layout.SetBorder(true).SetTitle("Buttons")
+
+	// Focus 切換處理
+	focusables := []tview.Primitive{
+		inputField, uploadBtn, downloadBtn, deleteBtn, exitBtn,
+	}
+	currentFocus := 0
+
+	layout.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyLeft:
+			currentFocus = (currentFocus - 1 + len(focusables)) % len(focusables)
+			app.SetFocus(focusables[currentFocus])
+			return nil
+		case tcell.KeyRight:
+			currentFocus = (currentFocus + 1) % len(focusables)
+			app.SetFocus(focusables[currentFocus])
+			return nil
+		}
+		return event
+	})
 
 	return layout
+}
+
+func PrefixTreeLayout() *tview.TreeView {
+	root := tview.NewTreeNode("Prefixes").SetColor(tcell.ColorGreen)
+	for i := 1; i <= 5; i++ {
+		prefix := fmt.Sprintf("Prefix_%d", i)
+		node := tview.NewTreeNode(prefix).SetReference(prefix)
+		root.AddChild(node)
+	}
+
+	tree := tview.NewTreeView().SetRoot(root).SetCurrentNode(root)
+	tree.SetBorder(true).SetTitle("Prefixes")
+
+	return tree
+}
+
+func FileListLayout() *tview.List {
+	list := tview.NewList().
+		AddItem("File_1", "", 0, nil).
+		AddItem("File_2", "", 0, nil).
+		AddItem("File_3", "", 0, nil)
+
+	list.SetBorder(true).SetTitle("Files")
+
+	return list
 }

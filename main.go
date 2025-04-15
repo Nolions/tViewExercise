@@ -8,28 +8,30 @@ import (
 
 func main() {
 	app := tview.NewApplication()
-
+	pages := tview.NewPages()
 	conf := model.NewAWSConfig()
 
-	pages := tview.NewPages()
+	// credentials 頁面
+	credentialsForm := ui.CredentialsForm(app, pages, conf, "manager", func(app *tview.Application) {
+		app.Stop()
+	})
+	credentialsPage := ui.WrapCentered(credentialsForm)
 
-	credentials := ui.CredentialsLayout(app, pages, "manager", stopApp, switchPage, conf)
-	alert := ui.AlertModel("alert", "test/n test", pages, "credentials", switchPage)
-	m := ui.ManagerLayout(app)
+	// manager 頁面
+	managerPage := ui.ManagerLayout(app, pages)
+	browserLayout := managerPage.GetItem(1).(*tview.Flex) // 第二個是 browserLayout
 
-	pages.AddPage("credentials", credentials, true, true).
-		AddPage("alert", alert, false, false).
-		AddPage("manager", m, true, false)
+	pages.AddPage("credentials", credentialsPage, true, true)
+	pages.AddPage("manager", managerPage, true, false)
+
+	focusMap := map[string]tview.Primitive{
+		"credentials": credentialsForm.GetFormItem(1).(tview.Primitive), // AccessKey input
+		"manager":     browserLayout,
+	}
+
+	ui.SetFocusOnPage(app, "credentials", focusMap)
 
 	if err := app.SetRoot(pages, true).Run(); err != nil {
 		panic(err)
 	}
-}
-
-func switchPage(pages *tview.Pages, pageName string) {
-	pages.SwitchToPage(pageName)
-}
-
-func stopApp(app *tview.Application) {
-	app.Stop()
 }
