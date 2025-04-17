@@ -55,4 +55,6 @@ func main() {
 func initApp() *tview.Application {
 	app := tview.NewApplication()
 	app.EnableMouse(true)
+
+	return app
 }
