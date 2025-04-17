@@ -2,7 +2,22 @@ package ui
 
 import (
 	"github.com/rivo/tview"
+	"tViewExercise/model"
 )
+
+type AppContext struct {
+	App     *tview.Application
+	Pages   *tview.Pages
+	AwsConf *model.AWSConfig
+}
+
+func NewAppContext(app *tview.Application, pages *tview.Pages, conf *model.AWSConfig) *AppContext {
+	return &AppContext{
+		App:     app,
+		Pages:   pages,
+		AwsConf: conf,
+	}
+}
 
 // SetFocusOnPage
 // 泛用 Focus 切換器

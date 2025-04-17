@@ -11,16 +11,11 @@ func main() {
 	app := initApp()
 	pages := tview.NewPages()
 	conf := model.NewAWSConfig()
+	appCtx := ui.NewAppContext(app, pages, conf)
 
-	// credentials 頁面
-	credentialsForm := ui.CredentialsForm(app, pages, conf, "manager", func(app *tview.Application) {
-		app.Stop()
-	})
-	credentialsPage := ui.WrapCentered(credentialsForm)
+	credentialsPage := appCtx.CredentialsLayout() // credentials 頁面
+	managerPage := appCtx.ManagerLayout()         // manager 頁面
 
-	// manager 頁面
-	managerPage := ui.ManagerLayout(app, pages)
-	browserLayout := managerPage.GetItem(1).(*tview.Flex) // 第二個是 browserLayout
 	filePicker := ui.FilePickerLayout(ui.FilePickerOption{
 		StartDir:          ".",
 		AllowFolderSelect: false,
@@ -41,8 +36,8 @@ func main() {
 	pages.AddPage("filepicker", modal, true, false)
 
 	focusMap := map[string]tview.Primitive{
-		"credentials": credentialsForm.GetFormItem(1).(tview.Primitive), // AccessKey input
-		"manager":     browserLayout,
+		"credentials": credentialsPage.GetItem(1).(tview.Primitive),
+		"manager":     managerPage.GetItem(1).(*tview.Flex),
 	}
 
 	ui.SetFocusOnPage(app, "credentials", focusMap)

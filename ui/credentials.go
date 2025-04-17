@@ -3,35 +3,35 @@ package ui
 import (
 	"github.com/rivo/tview"
 	"tViewExercise/aws"
-	"tViewExercise/model"
 )
 
-func CredentialsForm(
-	app *tview.Application,
-	pages *tview.Pages,
-	conf *model.AWSConfig,
-	switchTo string,
-	exitFun func(app *tview.Application),
-) *tview.Form {
+func (appCtx *AppContext) CredentialsLayout() *tview.Flex {
+	credentialsForm := appCtx.CredentialsForm("manager", func(app *tview.Application) {
+		app.Stop()
+	})
+	return WrapCentered(credentialsForm)
+}
+
+func (appCtx *AppContext) CredentialsForm(switchTo string, exitFun func(app *tview.Application)) *tview.Form {
 	form := tview.NewForm()
-	form.AddDropDown("Region", aws.Regions, conf.Region, nil).
-		AddInputField("AccessKey", conf.AccessKey, 35, nil, nil).
-		AddInputField("SecretKey", conf.SecretKey, 35, nil, nil).
-		AddInputField("Bucket", conf.Bucket, 35, nil, nil).
-		AddCheckbox("Acl", conf.Acl, nil).
+	form.AddDropDown("Region", aws.Regions, appCtx.AwsConf.Region, nil).
+		AddInputField("AccessKey", appCtx.AwsConf.AccessKey, 35, nil, nil).
+		AddInputField("SecretKey", appCtx.AwsConf.SecretKey, 35, nil, nil).
+		AddInputField("Bucket", appCtx.AwsConf.Bucket, 35, nil, nil).
+		AddCheckbox("Acl", appCtx.AwsConf.Acl, nil).
 		AddButton("Save", func() {
-			pages.SwitchToPage(switchTo)
+			appCtx.Pages.SwitchToPage(switchTo)
 		}).
 		AddButton("Reset", func() {
-			conf.AccessKey = ""
-			conf.SecretKey = ""
-			conf.Bucket = ""
+			appCtx.AwsConf.AccessKey = ""
+			appCtx.AwsConf.SecretKey = ""
+			appCtx.AwsConf.Bucket = ""
 			form.GetFormItem(1).(*tview.InputField).SetText("")
 			form.GetFormItem(2).(*tview.InputField).SetText("")
 			form.GetFormItem(3).(*tview.InputField).SetText("")
 		}).
 		AddButton("Exit", func() {
-			exitFun(app)
+			exitFun(appCtx.App)
 		})
 
 	form.SetTitle("Credentials").SetBorder(true)
