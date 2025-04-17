@@ -13,8 +13,8 @@ func CredentialsForm(
 	switchTo string,
 	exitFun func(app *tview.Application),
 ) *tview.Form {
-	form := tview.NewForm().
-		AddDropDown("Region", aws.Regions, conf.Region, nil).
+	form := tview.NewForm()
+	form.AddDropDown("Region", aws.Regions, conf.Region, nil).
 		AddInputField("AccessKey", conf.AccessKey, 35, nil, nil).
 		AddInputField("SecretKey", conf.SecretKey, 35, nil, nil).
 		AddInputField("Bucket", conf.Bucket, 35, nil, nil).
@@ -22,7 +22,14 @@ func CredentialsForm(
 		AddButton("Save", func() {
 			pages.SwitchToPage(switchTo)
 		}).
-		AddButton("Reset", func() {}).
+		AddButton("Reset", func() {
+			conf.AccessKey = ""
+			conf.SecretKey = ""
+			conf.Bucket = ""
+			form.GetFormItem(1).(*tview.InputField).SetText("")
+			form.GetFormItem(2).(*tview.InputField).SetText("")
+			form.GetFormItem(3).(*tview.InputField).SetText("")
+		}).
 		AddButton("Exit", func() {
 			exitFun(app)
 		})

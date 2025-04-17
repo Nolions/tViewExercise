@@ -32,7 +32,7 @@ func main() {
 	})
 	filePicker.SetBorder(true).SetTitle("Select a file")
 
-	modal := ui.FilePickerModal(filePicker, 60, 20, func() {
+	modal := ui.FilePickerModal(filePicker, 60, 15, func() {
 		pages.HidePage("filepicker")
 	})
 

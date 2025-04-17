@@ -94,12 +94,16 @@ func ConsoleLayout() *tview.TextView {
 
 func ButtonsLayout(app *tview.Application, pages *tview.Pages) *tview.Flex {
 	inputField := tview.NewInputField().SetLabel("Upload Path: ").SetFieldWidth(55)
-	uploadBtn := tview.NewButton("Upload").SetSelectedFunc(func() {
+	selectBtn := tview.NewButton("Select").SetSelectedFunc(func() {
 		pages.ShowPage("filepicker")
 		//app.SetFocus(filePicker) // 可選
 	})
-	downloadBtn := tview.NewButton("Download")
-	deleteBtn := tview.NewButton("Delete")
+	uploadBtn := tview.NewButton("Upload").SetSelectedFunc(func() {
+	})
+	downloadBtn := tview.NewButton("Download").SetSelectedFunc(func() {
+	})
+	deleteBtn := tview.NewButton("Delete").SetSelectedFunc(func() {
+	})
 	exitBtn := tview.NewButton("Exit").SetSelectedFunc(func() {
 		pages.SwitchToPage("credentials")
 	})
@@ -107,6 +111,8 @@ func ButtonsLayout(app *tview.Application, pages *tview.Pages) *tview.Flex {
 	layout := tview.NewFlex().SetDirection(tview.FlexColumn).
 		AddItem(tview.NewBox(), 2, 0, false).
 		AddItem(inputField, 70, 0, false).
+		AddItem(tview.NewBox(), 1, 0, false).
+		AddItem(selectBtn, 10, 0, false).
 		AddItem(tview.NewBox(), 1, 0, false).
 		AddItem(uploadBtn, 10, 0, false).
 		AddItem(tview.NewBox(), 0, 1, false).
@@ -121,7 +127,7 @@ func ButtonsLayout(app *tview.Application, pages *tview.Pages) *tview.Flex {
 
 	// Focus 切換處理
 	focusables := []tview.Primitive{
-		inputField, uploadBtn, downloadBtn, deleteBtn, exitBtn,
+		inputField, selectBtn, uploadBtn, downloadBtn, deleteBtn, exitBtn,
 	}
 	currentFocus := 0
 

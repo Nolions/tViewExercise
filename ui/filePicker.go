@@ -113,7 +113,6 @@ func FilePickerLayout(opt FilePickerOption) *tview.TreeView {
 			childNode := tview.NewTreeNode(name).
 				SetReference(childPath)
 
-			// ✅ 資料夾
 			if entry.IsDir() {
 				childNode.SetColor(tcell.ColorGreen)
 				if opt.AllowFolderSelect {
