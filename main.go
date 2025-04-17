@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	app := tview.NewApplication()
+	app := initApp()
 	pages := tview.NewPages()
 	conf := model.NewAWSConfig()
 
@@ -50,4 +50,9 @@ func main() {
 	if err := app.SetRoot(pages, true).Run(); err != nil {
 		panic(err)
 	}
+}
+
+func initApp() *tview.Application {
+	app := tview.NewApplication()
+	app.EnableMouse(true)
 }
